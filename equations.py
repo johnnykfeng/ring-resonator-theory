@@ -46,6 +46,12 @@ def T_min(a, sigma):
 def extinction_ratio(a, sigma):
     return T_max(a, sigma)/T_min(a, sigma)
 
+def del_k_FSR(L):
+    return (2*np.pi)/L
+
+def del_f_FSR(L):
+    return 1/(L*c)
+
 def del_k_FWHD(a, sigma, L):
     return (4/L)*np.arccos((1+a*sigma)/(np.sqrt(2*(1+a**2*sigma**2))))
 
