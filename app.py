@@ -19,11 +19,11 @@ c = 3e8 # speed of light in m/s
 st.sidebar.subheader("T_ring Parameters")
 sigma = st.sidebar.slider("sigma", min_value=0.0, max_value=1.0, value=0.5, step=0.01)
 a = st.sidebar.slider("a", min_value=0.0, max_value=1.0, value=0.8, step=0.01)
-L = st.sidebar.slider("L (um)", min_value=0.1, max_value=100.0, value=50.0, step=1.0)
+L = st.sidebar.slider("L (um)", min_value=0.1, max_value=3000.0, value=300.0, step=10.0)
 
 # Wavelength or k
-wavelength_min = st.sidebar.number_input("Wavelength min (μm)", min_value=0.1, max_value=10.0, value=1.4, step=0.01)
-wavelength_max = st.sidebar.number_input("Wavelength max (μm)", min_value=0.1, max_value=10.0, value=1.7, step=0.01)
+wavelength_min = st.sidebar.number_input("Wavelength min (μm)", min_value=0.1, max_value=10.0, value=1.45, step=0.01)
+wavelength_max = st.sidebar.number_input("Wavelength max (μm)", min_value=0.1, max_value=10.0, value=1.65, step=0.01)
 num_points = st.sidebar.number_input("Number of points", min_value=10, max_value=10000, value=1000, step=10)
 omega_min = st.sidebar.number_input("Omega min (Hz)", min_value=0.1, max_value=10.0, value=1.4, step=0.01)
 omega_max = st.sidebar.number_input("Omega max (Hz)", min_value=0.1, max_value=10.0, value=1.7, step=0.01)
@@ -37,18 +37,16 @@ wavelengths = np.linspace(wavelength_min, wavelength_max, int(num_points))
 k = 2 * np.pi / wavelengths
 T = T_ring(sigma, a, k, L)
 
-resonance_dict = resonance_waves(wavelength_min, wavelength_max, L)
-resonance_waves = list(resonance_dict.values())
-resonance_n = list(resonance_dict.keys())
-resonance_list_str = ", ".join([f'{wave:.4f}' for wave in resonance_waves])
-st.write(f"Resonance Wavelength List (um): {resonance_list_str}")
+resonance_waves = resonance_waves(wavelength_min, wavelength_max, L)
+with st.expander("Resonance Wavelength List (um)"):
+    st.write(resonance_waves)
 
 include_resonance = st.checkbox("Include Resonance", value=True)
 
 fig, ax = plt.subplots()
 ax.plot(wavelengths, T, label="Transmission", linestyle='-')
 if include_resonance:
-    ax.vlines(resonance_waves, T_min, T_max, color='red', linestyle='--')
+    ax.vlines(resonance_waves, T_min, T_max, color='red', linestyle='--', label="Resonance")
 # ax.plot(omega, T, label="Transmission", linestyle='-', marker='.')
 ax.set_xlabel("Wavelength (μm)")
 # ax.set_xlabel("Frequency (Hz)")
@@ -56,7 +54,7 @@ ax.set_ylabel("Transmission")
 ax.set_title("Ring Resonator Transmission Spectrum")
 ax.set_ylim(T_min, T_max)
 ax.grid(True)
-ax.legend()
+ax.legend(loc='lower right')
 
 st.pyplot(fig)
 
